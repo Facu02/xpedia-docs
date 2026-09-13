@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Taller de Misiones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-page:#f5f3ee;
+    --surface:#ffffff;
+    --surface-muted:#f1efe6;
+    --line:#e4ddcb;
+    --ink:#26241f;
+    --muted:#79766c;
+    --amber:#f2a53f;
+    --amber-strong:#a8600f;
+    --amber-tint:#fbead2;
+    --teal:#1fae9c;
+    --teal-tint:#dcf3f0;
+    --ok:#2f8f52;
+    --ok-tint:#e2f2e6;
+    --danger:#c1443a;
+    --grey-tint:#eeece5;
+    --font-pixel:"Press Start 2P", monospace;
+    --font-body:"IBM Plex Sans", system-ui, sans-serif;
+    --font-mono:"IBM Plex Mono", ui-monospace, monospace;
+  }
+  *{box-sizing:border-box;}
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+  }
+
+  body{
+    background:var(--bg-page);
+    color:var(--ink);
+    font-family:var(--font-body);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:28px 16px 48px;
+  }
+  .page{width:100%; max-width:1080px; display:flex; flex-direction:column; gap:18px;}
+
+  .masthead{display:flex; align-items:baseline; gap:8px;}
+  .masthead .mark{font-family:var(--font-pixel); font-size:10px; color:var(--muted); letter-spacing:1px;}
+  .masthead .sep{color:var(--line); font-size:12px;}
+  .masthead .where{font-family:var(--font-mono); font-size:11px; color:var(--muted); letter-spacing:0.02em;}
+
+  header.hero{display:flex; flex-direction:column; gap:6px;}
+  header.hero h1{font-size:23px; font-weight:700; margin:0; text-wrap:balance;}
+  header.hero p{font-size:13.5px; color:var(--muted); margin:0; max-width:65ch;}
+
+  .workspace{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);
+    gap:18px;
+    align-items:start;
+  }
+  @media (max-width:860px){ .workspace{grid-template-columns:1fr;} }
+
+  .panel{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:14px;
+    overflow:hidden;
+  }
+  .panel-head{
+    padding:14px 18px;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .panel-head h2{font-size:14.5px; margin:0; font-weight:600;}
+  .panel-head .hint{font-size:11.5px; color:var(--muted);}
+  .panel-body{padding:16px 18px;}
+  .panel + .panel{margin-top:18px;}
+
+  /* documents */
+  .doc-list{display:flex; flex-direction:column; gap:8px; margin-bottom:10px;}
+  .doc-chip{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:9px 12px;
+    background:var(--surface-muted);
+    border:1px solid var(--line);
+    border-radius:9px;
+    font-size:13px;
+  }
+  .doc-chip .ico{
+    width:22px; height:22px; border-radius:5px;
+    background:var(--teal-tint); color:var(--teal);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-mono); font-size:10px; font-weight:600;
+    flex-shrink:0;
+  }
+  .doc-chip .name{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .doc-chip .rm{background:none; border:none; color:var(--muted); cursor:pointer; font-size:15px; line-height:1; padding:2px 4px;}
+  .doc-chip .rm:hover{color:var(--danger);}
+  .add-doc{
+    width:100%;
+    background:none;
+    border:1.5px dashed var(--line);
+    border-radius:9px;
+    padding:9px 12px;
+    font-size:13px;
+    color:var(--muted);
+    cursor:pointer;
+    font-family:var(--font-body);
+  }
+  .add-doc:hover{border-color:var(--teal); color:var(--teal);}
+  .rag-note{font-size:11.5px; color:var(--muted); margin-top:8px; line-height:1.5;}
+
+  /* case brief form */
+  .field{display:flex; flex-direction:column; gap:5px; margin-bottom:12px;}
+  .field:last-child{margin-bottom:0;}
+  .field label{font-size:12px; color:var(--muted); font-weight:500;}
+  .field input, .field select, .field textarea{
+    font-family:var(--font-body);
+    font-size:13.5px;
+    color:var(--ink);
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:8px 10px;
+  }
+  .field textarea{resize:vertical; min-height:52px; line-height:1.45;}
+  .field input:focus, .field select:focus, .field textarea:focus{outline:2px solid var(--teal); outline-offset:1px;}
+  .field-row{display:flex; gap:10px;}
+  .field-row .field{flex:1;}
+
+  /* chat */
+  .chat-body{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    max-height:280px;
+    overflow-y:auto;
+    padding-bottom:4px;
+  }
+  .msg{max-width:88%; padding:9px 12px; border-radius:11px; font-size:13.5px; line-height:1.45;}
+  .msg.ai{background:var(--surface-muted); align-self:flex-start; border-bottom-left-radius:3px;}
+  .msg.human{background:var(--teal); color:#eafffa; align-self:flex-end; border-bottom-right-radius:3px;}
+  .msg.note{align-self:center; font-size:11.5px; color:var(--muted); background:none; padding:2px;}
+  .chat-quick{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0;}
+  .quick-btn{
+    background:var(--amber-tint);
+    color:var(--amber-strong);
+    border:none;
+    border-radius:999px;
+    padding:6px 12px;
+    font-size:12.5px;
+    font-weight:600;
+    cursor:pointer;
+    font-family:var(--font-body);
+  }
+  .quick-btn:hover{background:var(--amber);}
+  .quick-btn[disabled]{opacity:0.5; cursor:not-allowed;}
+  .chat-input-row{display:flex; gap:8px; margin-top:10px;}
+  .chat-input-row textarea{
+    flex:1; resize:none; height:40px;
+    font-family:var(--font-body); font-size:13.5px;
+    border:1px solid var(--line); border-radius:8px; padding:8px 10px;
+  }
+  .chat-input-row textarea:focus{outline:2px solid var(--teal); outline-offset:1px;}
+  .btn{
+    font-family:var(--font-body);
+    font-weight:600;
+    font-size:13px;
+    border:none;
+    border-radius:8px;
+    padding:9px 15px;
+    cursor:pointer;
+  }
+  .btn:focus-visible{outline:2px solid var(--amber-strong); outline-offset:2px;}
+  .btn[disabled]{opacity:0.45; cursor:not-allowed;}
+  .btn-dark{background:var(--ink); color:var(--bg-page);}
+  .btn-dark:hover:not([disabled]){opacity:0.88;}
+  .btn-ghost{background:none; border:1px solid var(--line); color:var(--ink);}
+  .btn-ghost:hover{background:var(--surface-muted);}
+  .btn-primary{background:var(--teal); color:#fff;}
+  .btn-primary:hover:not([disabled]){background:#189384;}
+
+  /* draft / status */
+  .status-pill{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:var(--font-mono); font-size:11px;
+    padding:4px 10px; border-radius:999px;
+  }
+  .status-pill .dot{width:6px; height:6px; border-radius:50%; background:currentColor;}
+  .status-pill.draft{background:var(--grey-tint); color:var(--muted);}
+  .status-pill.ai{background:var(--amber-tint); color:var(--amber-strong);}
+  .status-pill.edited{background:var(--teal-tint); color:var(--teal);}
+  .status-pill.published{background:var(--ok-tint); color:var(--ok);}
+
+  .mission-meta{padding:14px 18px; border-bottom:1px solid var(--line); display:flex; flex-direction:column; gap:6px;}
+  .mission-meta .title{font-size:15.5px; font-weight:600;}
+  .mission-meta .sub{font-size:12px; color:var(--muted); font-family:var(--font-mono);}
+
+  .node-list{display:flex; flex-direction:column; gap:12px;}
+  .node-card{border:1px solid var(--line); border-radius:10px; overflow:hidden;}
+  .node-card-head{
+    display:flex; align-items:center; gap:8px;
+    padding:8px 12px; background:var(--surface-muted);
+    font-family:var(--font-mono); font-size:11px; color:var(--muted);
+  }
+  .node-card-head .key{color:var(--ink); font-weight:600;}
+  .node-card-head .end-tag{margin-left:auto; color:var(--amber-strong);}
+  .node-card-body{padding:12px;}
+  .node-line{
+    width:100%; font-family:var(--font-body); font-size:13.5px;
+    border:1px solid var(--line); border-radius:7px; padding:8px 10px;
+    resize:vertical; min-height:44px; margin-bottom:10px; line-height:1.45;
+  }
+  .node-line:focus{outline:2px solid var(--teal); outline-offset:1px;}
+
+  .option-row{
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:9px 10px;
+    margin-bottom:8px;
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+  }
+  .option-row:last-child{margin-bottom:0;}
+  .option-text{
+    width:100%; font-family:var(--font-body); font-size:13px;
+    border:1px solid var(--line); border-radius:6px; padding:6px 8px;
+  }
+  .option-text:focus{outline:2px solid var(--teal); outline-offset:1px;}
+  .option-controls{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .tag-inputs{display:flex; gap:6px; flex-wrap:wrap;}
+  .tag-input{display:flex; align-items:center; gap:3px;}
+  .tag-input label{font-family:var(--font-mono); font-size:10px; color:var(--muted);}
+  .tag-input input{
+    width:38px; font-family:var(--font-mono); font-size:11.5px; text-align:center;
+    border:1px solid var(--line); border-radius:5px; padding:3px 2px;
+  }
+  .next-select{
+    font-family:var(--font-mono); font-size:11.5px;
+    border:1px solid var(--line); border-radius:5px; padding:3px 6px;
+    margin-left:auto;
+  }
+  .opt-remove{background:none; border:none; color:var(--muted); cursor:pointer; font-size:14px; padding:2px 4px;}
+  .opt-remove:hover{color:var(--danger);}
+  .add-option{
+    background:none; border:1px dashed var(--line); border-radius:7px;
+    padding:6px 10px; font-size:12px; color:var(--muted); cursor:pointer; width:100%;
+    font-family:var(--font-body);
+  }
+  .add-option:hover{border-color:var(--teal); color:var(--teal);}
+
+  .end-select{
+    font-family:var(--font-body); font-size:13px;
+    border:1px solid var(--line); border-radius:7px; padding:6px 9px;
+  }
+
+  .draft-actions{
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    padding:14px 18px; border-top:1px solid var(--line); flex-wrap:wrap;
+  }
+  .draft-actions .left-actions{display:flex; gap:8px; flex-wrap:wrap;}
+
+  /* preview modal */
+  .modal{
+    position:fixed; inset:0; z-index:50;
+    background:#26241fb3;
+    display:flex; padding:24px 16px;
+  }
+  .modal[hidden]{display:none;}
+  .modal-card{
+    margin:auto; width:min(96%,560px); max-height:min(86vh,680px);
+    overflow-y:auto; background:var(--surface); border-radius:14px;
+    padding:22px 24px;
+  }
+  .modal-card h2{margin:0 0 4px; font-size:17px;}
+  .modal-card .sub{font-size:12px; color:var(--muted); font-family:var(--font-mono); margin-bottom:16px;}
+  .modal-close{float:right; background:none; border:none; color:var(--muted); font-size:18px; cursor:pointer;}
+  .modal-close:hover{color:var(--ink);}
+  .preview-node{margin-bottom:16px;}
+  .preview-node .npc{
+    background:var(--surface-muted); border-radius:10px; padding:9px 12px;
+    font-size:13.5px; max-width:85%; margin-bottom:8px;
+  }
+  .preview-node .opt{
+    font-size:12.5px; color:var(--teal); padding:5px 0 5px 14px; border-left:2px solid var(--teal-tint);
+    margin-bottom:4px;
+  }
+  .preview-node .end-label{
+    display:inline-block; margin-top:2px; font-family:var(--font-mono); font-size:11px;
+    padding:3px 8px; border-radius:999px; background:var(--ok-tint); color:var(--ok);
+  }
+
+  @media (max-width:480px){
+    .field-row{flex-direction:column;}
+    .draft-actions{flex-direction:column; align-items:stretch;}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="masthead">
+    <span class="mark">XPedia</span>
+    <span class="sep">/</span>
+    <span class="where">Contenidos</span>
+  </div>
+
+  <header class="hero">
+    <h1>Taller de misiones</h1>
+    <p>Subí la documentación de la empresa, co-creá el caso con la IA y revisá cada rama del diálogo antes de publicarlo — la IA propone, una persona aprueba.</p>
+  </header>
+
+  <div class="workspace">
+    <!-- LEFT: sources + co-authoring chat -->
+    <div class="left-col">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Documentación de referencia</h2>
+          <span class="hint">alimenta el contexto (RAG)</span>
+        </div>
+        <div class="panel-body">
+          <div class="doc-list" id="docList"></div>
+          <button class="add-doc" id="addDocBtn" type="button">+ Agregar documento</button>
+          <p class="rag-note">Estos documentos no se muestran tal cual al cliente simulado: la IA los usa como contexto para que el caso sea consistente con las políticas reales de la empresa.</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Definir el caso</h2>
+        </div>
+        <div class="panel-body">
+          <div class="field-row">
+            <div class="field">
+              <label for="fRole">Rol del empleado</label>
+              <input id="fRole" type="text" value="Representante de atención al cliente" />
+            </div>
+            <div class="field">
+              <label for="fSkill">Habilidad a entrenar</label>
+              <select id="fSkill">
+                <option>Empatía y comunicación</option>
+                <option>Resolución de conflictos</option>
+                <option>Ventas</option>
+                <option>Liderazgo</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="fSituation">Situación</label>
+            <textarea id="fSituation">Un cliente se acerca al mostrador porque le cobraron dos veces el mismo servicio. Ya reclamó una vez por teléfono y no tuvo respuesta.</textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Conversación con la IA</h2>
+          <span class="hint">copiloto de redacción</span>
+        </div>
+        <div class="panel-body">
+          <div class="chat-body" id="chatBody"></div>
+          <div class="chat-quick">
+            <button class="quick-btn" id="genDraftBtn" type="button">Generar borrador con IA</button>
+          </div>
+          <div class="chat-input-row">
+            <textarea id="chatInput" placeholder="Pedile ajustes a la IA: “hacé que el cliente sea más difícil de calmar”…"></textarea>
+            <button class="btn btn-dark" id="chatSendBtn" type="button">Enviar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: editable draft -->
+    <div class="right-col">
+      <div class="panel">
+        <div class="mission-meta">
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <span class="status-pill draft" id="statusPill"><span class="dot"></span><span id="statusText">Borrador</span></span>
+          </div>
+          <span class="title" id="missionTitle">Reclamo por cobro duplicado</span>
+          <span class="sub" id="missionSub">Representante de atención al cliente · Empatía y comunicación</span>
+        </div>
+        <div class="panel-body">
+          <div class="node-list" id="nodeList"></div>
+          <button class="btn btn-ghost" id="addNodeBtn" type="button" style="margin-top:12px; width:100%;">+ Agregar nodo</button>
+        </div>
+        <div class="draft-actions">
+          <div class="left-actions">
+            <button class="btn btn-ghost" id="previewBtn" type="button">Vista previa</button>
+          </div>
+          <button class="btn btn-primary" id="publishBtn" type="button">Publicar misión</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="previewModal" hidden>
+  <div class="modal-card">
+    <button class="modal-close" id="previewClose" aria-label="Cerrar">×</button>
+    <h2 id="previewTitle">Vista previa</h2>
+    <div class="sub">Así vería el árbol la persona que juega la misión</div>
+    <div id="previewBody"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- state ----------
+  let docs = ['Política de reembolsos.pdf', 'Manual de atención al cliente.pdf'];
+  let status = 'draft'; // draft | ai | edited | published
+
+  // seeded with the same case already validated in the player prototype
+  let mission = {
+    title: 'Reclamo por cobro duplicado',
+    start: 'start',
+    nodes: {
+      start: {
+        text: 'Me cobraron dos veces el mismo servicio este mes. Ya llamé una vez y no solucionaron nada. Quiero que esto se arregle YA.',
+        options: [
+          { text:'Entiendo tu frustración. Vamos a revisar tu cuenta ahora mismo para solucionarlo.', tags:{empatia:2,claridad:0,resolucion:1,tono_profesional:0}, next:'calm1' },
+          { text:'Señor, tranquilícese, seguramente fue un error del sistema.', tags:{empatia:-1,claridad:0,resolucion:0,tono_profesional:-1}, next:'angry1' },
+        ],
+      },
+      calm1: {
+        text: 'Bueno… al menos alguien me escucha. ¿Y qué van a hacer al respecto?',
+        options: [
+          { text:'Genero la devolución ahora mismo. Te llega en 48hs, con comprobante por mail.', tags:{empatia:0,claridad:2,resolucion:2,tono_profesional:0}, next:'end_resolved' },
+          { text:'No te puedo asegurar nada, pero voy a intentar.', tags:{empatia:0,claridad:0,resolucion:-1,tono_profesional:-1}, next:'end_partial' },
+        ],
+      },
+      angry1: {
+        text: '¿Error del sistema? A MÍ me cobraron de más, no es un problema abstracto, es MI plata.',
+        options: [
+          { text:'Tenés razón, disculpame. Vamos a revisarlo juntos ahora.', tags:{empatia:1,claridad:0,resolucion:0,tono_profesional:0}, next:'calm1' },
+        ],
+      },
+      end_resolved: { text: 'Bueno… se agradece que alguien lo solucione de una vez. Gracias.', end:'resolved' },
+      end_partial: { text: 'Mmm, no es lo que esperaba… esperemos que esta vez sí funcione.', end:'partial' },
+    },
+  };
+
+  let chatTurns = []; // {role:'user'|'assistant', content}
+
+  // ---------- capability ----------
+  let sample = null;
+  if (window.claude && window.claude.use){
+    window.claude.use('sample').then(s => { sample = s; });
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  // ---------- documents ----------
+  const docList = document.getElementById('docList');
+  function renderDocs(){
+    docList.innerHTML = '';
+    docs.forEach((name, i) => {
+      const row = document.createElement('div');
+      row.className = 'doc-chip';
+      row.innerHTML = '<span class="ico">PDF</span><span class="name"></span><button class="rm" type="button" aria-label="Quitar">×</button>';
+      row.querySelector('.name').textContent = name;
+      row.querySelector('.rm').addEventListener('click', () => { docs.splice(i,1); renderDocs(); });
+      docList.appendChild(row);
+    });
+  }
+  document.getElementById('addDocBtn').addEventListener('click', () => {
+    const name = window.prompt('Nombre del documento (simulación de carga — en producción esto sube el archivo real):', 'Nuevo documento.pdf');
+    if (name && name.trim()){ docs.push(name.trim()); renderDocs(); }
+  });
+  renderDocs();
+
+  // ---------- status ----------
+  const statusPill = document.getElementById('statusPill');
+  const statusText = document.getElementById('statusText');
+  const STATUS_COPY = { draft:'Borrador', ai:'Generado por IA · sin revisar', edited:'Editado', published:'Publicado' };
+  function setStatus(s){
+    status = s;
+    statusPill.className = 'status-pill ' + s;
+    statusText.textContent = STATUS_COPY[s];
+    document.getElementById('publishBtn').textContent = s === 'published' ? 'Despublicar' : 'Publicar misión';
+  }
+  setStatus('draft');
+
+  function markEdited(){
+    if (status === 'published') return;
+    if (status !== 'edited') setStatus('edited');
+  }
+
+  // ---------- draft tree editor ----------
+  const nodeList = document.getElementById('nodeList');
+
+  function nodeKeys(){ return Object.keys(mission.nodes); }
+
+  function renderNodes(){
+    nodeList.innerHTML = '';
+    for (const key of nodeKeys()){
+      const node = mission.nodes[key];
+      const card = document.createElement('div');
+      card.className = 'node-card';
+
+      const head = document.createElement('div');
+      head.className = 'node-card-head';
+      head.innerHTML = '<span class="key">' + escapeHtml(key) + '</span><span>· línea del personaje</span>' +
+        (node.end ? '<span class="end-tag">final: ' + node.end + '</span>' : '');
+      card.appendChild(head);
+
+      const body = document.createElement('div');
+      body.className = 'node-card-body';
+
+      const line = document.createElement('textarea');
+      line.className = 'node-line';
+      line.value = node.text;
+      line.addEventListener('input', () => { node.text = line.value; markEdited(); });
+      body.appendChild(line);
+
+      if (node.end){
+        const sel = document.createElement('select');
+        sel.className = 'end-select';
+        ['resolved','partial','unresolved'].forEach(v => {
+          const o = document.createElement('option');
+          o.value = v; o.textContent = v === 'resolved' ? 'Caso resuelto' : v === 'partial' ? 'Resuelto a medias' : 'Sin resolver / escalado';
+          if (node.end === v) o.selected = true;
+          sel.appendChild(o);
+        });
+        sel.addEventListener('change', () => { node.end = sel.value; markEdited(); });
+        body.appendChild(sel);
+      } else {
+        (node.options || []).forEach((opt, idx) => {
+          body.appendChild(renderOptionRow(node, opt, idx));
+        });
+        const addOpt = document.createElement('button');
+        addOpt.type = 'button';
+        addOpt.className = 'add-option';
+        addOpt.textContent = '+ Agregar opción';
+        addOpt.addEventListener('click', () => {
+          node.options.push({ text:'Nueva respuesta del representante…', tags:{empatia:0,claridad:0,resolucion:0,tono_profesional:0}, next:nodeKeys()[0] });
+          markEdited();
+          renderNodes();
+        });
+        body.appendChild(addOpt);
+      }
+
+      card.appendChild(body);
+      nodeList.appendChild(card);
+    }
+  }
+
+  function renderOptionRow(node, opt, idx){
+    const row = document.createElement('div');
+    row.className = 'option-row';
+
+    const text = document.createElement('input');
+    text.className = 'option-text';
+    text.type = 'text';
+    text.value = opt.text;
+    text.addEventListener('input', () => { opt.text = text.value; markEdited(); });
+    row.appendChild(text);
+
+    const controls = document.createElement('div');
+    controls.className = 'option-controls';
+
+    const tagWrap = document.createElement('div');
+    tagWrap.className = 'tag-inputs';
+    [['empatia','Emp'],['claridad','Cla'],['resolucion','Res'],['tono_profesional','Tono']].forEach(([k,label]) => {
+      const w = document.createElement('div');
+      w.className = 'tag-input';
+      const lb = document.createElement('label');
+      lb.textContent = label;
+      const inp = document.createElement('input');
+      inp.type = 'number';
+      inp.value = opt.tags[k] || 0;
+      inp.addEventListener('input', () => { opt.tags[k] = parseInt(inp.value,10) || 0; markEdited(); });
+      w.appendChild(lb); w.appendChild(inp);
+      tagWrap.appendChild(w);
+    });
+    controls.appendChild(tagWrap);
+
+    const nextSel = document.createElement('select');
+    nextSel.className = 'next-select';
+    nodeKeys().forEach(k => {
+      const o = document.createElement('option');
+      o.value = k; o.textContent = 'lleva a: ' + k;
+      if (opt.next === k) o.selected = true;
+      nextSel.appendChild(o);
+    });
+    nextSel.addEventListener('change', () => { opt.next = nextSel.value; markEdited(); });
+    controls.appendChild(nextSel);
+
+    const rm = document.createElement('button');
+    rm.type = 'button';
+    rm.className = 'opt-remove';
+    rm.textContent = '×';
+    rm.addEventListener('click', () => { node.options.splice(idx,1); markEdited(); renderNodes(); });
+    controls.appendChild(rm);
+
+    row.appendChild(controls);
+    return row;
+  }
+
+  document.getElementById('addNodeBtn').addEventListener('click', () => {
+    let n = 1, key = 'nodo' + n;
+    while (mission.nodes[key]) key = 'nodo' + (++n);
+    mission.nodes[key] = { text:'Nueva línea del personaje…', options:[{ text:'Nueva respuesta…', tags:{empatia:0,claridad:0,resolucion:0,tono_profesional:0}, next:mission.start }] };
+    markEdited();
+    renderNodes();
+  });
+
+  renderNodes();
+
+  // ---------- meta fields ----------
+  const missionTitleEl = document.getElementById('missionTitle');
+  const missionSubEl = document.getElementById('missionSub');
+  function refreshMeta(){
+    missionTitleEl.textContent = mission.title;
+    missionSubEl.textContent = document.getElementById('fRole').value + ' · ' + document.getElementById('fSkill').value;
+  }
+  document.getElementById('fRole').addEventListener('input', refreshMeta);
+  document.getElementById('fSkill').addEventListener('change', refreshMeta);
+  refreshMeta();
+
+  // ---------- chat ----------
+  const chatBody = document.getElementById('chatBody');
+  function addMsg(role, text){
+    const el = document.createElement('div');
+    el.className = 'msg ' + role;
+    el.textContent = text;
+    chatBody.appendChild(el);
+    chatBody.scrollTop = chatBody.scrollHeight;
+    return el;
+  }
+  function addNote(text){
+    const el = document.createElement('div');
+    el.className = 'msg note';
+    el.textContent = text;
+    chatBody.appendChild(el);
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+  addMsg('ai', 'Ya tengo el rol, la habilidad y la situación. Puedo generar un primer borrador del árbol de diálogo, o si querés contame más detalles antes (qué tan difícil debería ser el cliente, cuántos finales, etc.).');
+
+  function buildContextPrompt(extra){
+    const docsLine = docs.length ? docs.join(', ') : '(sin documentos cargados)';
+    return 'Estás ayudando a un equipo de capacitación corporativo a diseñar una misión de entrenamiento para la app XPedia — un juego de simulación de atención al cliente.\n\n'
+      + 'Documentos de referencia disponibles (contexto/RAG): ' + docsLine + '\n'
+      + 'Rol del empleado: ' + document.getElementById('fRole').value + '\n'
+      + 'Habilidad a entrenar: ' + document.getElementById('fSkill').value + '\n'
+      + 'Situación: ' + document.getElementById('fSituation').value + '\n\n'
+      + (extra || '')
+      + '\nRespondé con SOLO un objeto JSON (sin texto adicional) con esta forma exacta:\n'
+      + '{"title": string, "start": "start", "nodes": {\n'
+      + '  "start": {"text": string, "options": [{"text": string, "tags": {"empatia": int -2..2, "claridad": int -2..2, "resolucion": int -2..2, "tono_profesional": int -2..2}, "next": string}]},\n'
+      + '  "...otros nodos intermedios con la misma forma...": {},\n'
+      + '  "...nodos finales...": {"text": string, "end": "resolved" | "partial" | "unresolved"}\n'
+      + '}}\n'
+      + 'Entre 4 y 7 nodos en total, en español rioplatense, líneas cortas (1-3 oraciones) como diría alguien parado en un mostrador. Al menos 2 finales distintos.';
+  }
+
+  function applyGeneratedMission(data){
+    if (!data || !data.nodes || !data.start) throw new Error('forma inválida');
+    mission = { title: data.title || mission.title, start: data.start, nodes: data.nodes };
+    for (const key in mission.nodes){
+      const n = mission.nodes[key];
+      if (!n.end){
+        n.options = (n.options || []).map(o => ({ text:o.text||'', tags:{ empatia:o.tags?.empatia||0, claridad:o.tags?.claridad||0, resolucion:o.tags?.resolucion||0, tono_profesional:o.tags?.tono_profesional||0 }, next:o.next||data.start }));
+      }
+    }
+    refreshMeta();
+    renderNodes();
+    setStatus('ai');
+  }
+
+  const genBtn = document.getElementById('genDraftBtn');
+  function generateDraft(extraInstruction){
+    if (!sample){ addNote('La generación con IA no está disponible en esta vista — podés seguir armando el árbol a mano.'); return; }
+    genBtn.disabled = true;
+    genBtn.textContent = 'Generando…';
+    sample.json(buildContextPrompt(extraInstruction), { modelTier:'default' }).then((data) => {
+      applyGeneratedMission(data);
+      addNote('Borrador generado. Revisá cada nodo antes de publicar.');
+    }).catch((err) => {
+      addNote(err.code === 'not_granted' ? 'La IA no está disponible en esta vista (permiso denegado).' : 'No se pudo generar el borrador. Probá de nuevo.');
+    }).finally(() => {
+      genBtn.disabled = false;
+      genBtn.textContent = 'Generar borrador con IA';
+    });
+  }
+  genBtn.addEventListener('click', () => generateDraft());
+
+  const chatInput = document.getElementById('chatInput');
+  document.getElementById('chatSendBtn').addEventListener('click', () => {
+    const text = chatInput.value.trim();
+    if (!text) return;
+    addMsg('human', text);
+    chatInput.value = '';
+    if (!sample){ addNote('La IA no está disponible en esta vista.'); return; }
+    const typing = addMsg('ai', 'Pensando…');
+    sample.json(buildContextPrompt('El equipo de contenidos pide este ajuste sobre el borrador actual: "' + text + '". Generá una versión nueva del árbol completo incorporando ese pedido.'), { modelTier:'default' })
+      .then((data) => {
+        typing.remove();
+        applyGeneratedMission(data);
+        addMsg('ai', 'Listo, actualicé el borrador con ese ajuste. Fijate el árbol a la derecha.');
+      }).catch((err) => {
+        typing.remove();
+        addMsg('ai', err.code === 'not_granted' ? 'No tengo permiso para usar la IA en esta vista.' : 'No pude aplicar ese ajuste, probá reformularlo.');
+      });
+  });
+
+  // ---------- preview ----------
+  const previewModal = document.getElementById('previewModal');
+  const previewBody = document.getElementById('previewBody');
+  document.getElementById('previewBtn').addEventListener('click', () => {
+    document.getElementById('previewTitle').textContent = mission.title;
+    previewBody.innerHTML = '';
+    for (const key of nodeKeys()){
+      const node = mission.nodes[key];
+      const wrap = document.createElement('div');
+      wrap.className = 'preview-node';
+      const npc = document.createElement('div');
+      npc.className = 'npc';
+      npc.textContent = node.text;
+      wrap.appendChild(npc);
+      if (node.end){
+        const tag = document.createElement('span');
+        tag.className = 'end-label';
+        tag.textContent = 'Final: ' + (node.end === 'resolved' ? 'caso resuelto' : node.end === 'partial' ? 'resuelto a medias' : 'sin resolver');
+        wrap.appendChild(tag);
+      } else {
+        (node.options || []).forEach(o => {
+          const line = document.createElement('div');
+          line.className = 'opt';
+          line.textContent = '→ "' + o.text + '" — lleva a: ' + o.next;
+          wrap.appendChild(line);
+        });
+      }
+      previewBody.appendChild(wrap);
+    }
+    previewModal.hidden = false;
+  });
+  document.getElementById('previewClose').addEventListener('click', () => { previewModal.hidden = true; });
+  previewModal.addEventListener('click', (e) => { if (e.target === previewModal) previewModal.hidden = true; });
+
+  // ---------- publish ----------
+  document.getElementById('publishBtn').addEventListener('click', () => {
+    if (status === 'published'){ setStatus('edited'); return; }
+    const hasEnding = Object.values(mission.nodes).some(n => n.end);
+    if (!hasEnding){ window.alert('La misión necesita al menos un nodo final antes de publicarse.'); return; }
+    setStatus('published');
+  });
+
+})();
+</script>
+</body>
+</html>

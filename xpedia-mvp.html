@@ -1,0 +1,1290 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Sucursal Telecom Sur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-page:#f5f3ee;
+    --bg-surface:#ffffff;
+    --bg-surface-muted:#f1efe6;
+    --line:#e4ddcb;
+    --ink:#26241f;
+    --muted:#79766c;
+    --amber:#f2a53f;
+    --amber-strong:#a8600f;
+    --amber-dim:#f6e2ba;
+    --teal:#1fae9c;
+    --teal-dim:#204943;
+    --danger:#c1443a;
+    --ok:#2f8f52;
+    --font-pixel:"Press Start 2P", monospace;
+    --font-body:"IBM Plex Sans", system-ui, sans-serif;
+    --font-mono:"IBM Plex Mono", ui-monospace, monospace;
+  }
+
+  *{box-sizing:border-box;}
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+  }
+
+  body{
+    background:var(--bg-page);
+    color:var(--ink);
+    font-family:var(--font-body);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:16px;
+    padding:28px 16px 40px;
+  }
+
+  .topbar{
+    width:100%;
+    max-width:760px;
+    display:flex;
+    justify-content:center;
+  }
+  .brand{
+    text-align:center;
+  }
+  .brand .wordmark{
+    font-family:var(--font-pixel);
+    font-size:13px;
+    letter-spacing:1.5px;
+    color:var(--ink);
+  }
+  .brand .tagline{
+    font-size:12.5px;
+    color:var(--muted);
+    margin-top:4px;
+  }
+
+  .frame{
+    width:100%;
+    max-width:760px;
+    background:var(--bg-surface);
+    border:1px solid var(--line);
+    border-radius:18px;
+    box-shadow:0 1px 2px rgba(38,36,31,0.05), 0 16px 36px -22px rgba(38,36,31,0.28);
+    overflow:hidden;
+  }
+
+  .hud{
+    padding:12px 18px 14px;
+    background:var(--bg-surface-muted);
+    border-bottom:1px solid var(--line);
+  }
+  .hud-context{
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--muted);
+    letter-spacing:0.02em;
+    margin-bottom:9px;
+  }
+  .stat-pills{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .pill{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:var(--bg-surface);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:5px 14px 5px 5px;
+  }
+  .pill .icon{
+    min-width:24px;
+    height:24px;
+    padding:0 6px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:var(--font-pixel);
+    font-size:8px;
+    flex-shrink:0;
+  }
+  .pill.level .icon{background:var(--amber-dim); color:var(--amber-strong);}
+  .pill.xp .icon{background:var(--amber-dim); color:var(--amber-strong);}
+  .pill.cases .icon{background:#dcf3f0; color:var(--teal); font-size:14px; font-family:var(--font-body); font-weight:700;}
+  .pill.skill .icon{background:#e7e3f8; color:#6a5acd;}
+  .pill .val{
+    font-family:var(--font-mono);
+    font-weight:700;
+    font-size:14px;
+    color:var(--ink);
+    font-variant-numeric:tabular-nums;
+  }
+
+  .help-chip{
+    margin-left:auto;
+    cursor:pointer;
+    font-family:inherit;
+    padding:0;
+    width:28px;
+    height:28px;
+    justify-content:center;
+  }
+  .help-chip .icon{
+    background:none;
+    border:none;
+    color:var(--muted);
+    font-family:var(--font-pixel);
+    font-size:11px;
+    min-width:0;
+    height:auto;
+    padding:0;
+  }
+  .help-chip:hover{background:var(--bg-surface-muted);}
+  .help-chip:hover .icon{color:var(--ink);}
+  .help-chip:focus-visible{outline:2px solid var(--amber-strong); outline-offset:2px;}
+
+  .viewport{
+    position:relative;
+    background:var(--bg-surface-muted);
+    display:flex;
+    justify-content:center;
+    padding:14px;
+  }
+  #game{
+    image-rendering:pixelated;
+    width:576px;
+    height:384px;
+    max-width:100%;
+    border-radius:6px;
+    box-shadow:inset 0 0 0 1px var(--line);
+  }
+
+  .overlay-layer{
+    position:absolute;
+    inset:14px;
+    display:flex;
+    justify-content:center;
+    pointer-events:none;
+  }
+
+  .prompt{
+    position:absolute;
+    bottom:26px;
+    left:50%;
+    transform:translateX(-50%);
+    background:var(--ink);
+    border-radius:8px;
+    padding:7px 12px;
+    font-size:12.5px;
+    color:var(--bg-page);
+    display:flex;
+    align-items:center;
+    gap:6px;
+    pointer-events:none;
+    white-space:nowrap;
+  }
+  .prompt kbd{
+    font-family:var(--font-mono);
+    background:rgba(255,255,255,0.14);
+    border-radius:4px;
+    padding:1px 6px;
+    color:var(--bg-page);
+    font-size:11px;
+  }
+  .prompt[hidden]{display:none;}
+
+  .toasts{
+    position:absolute;
+    top:8px;
+    right:8px;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap:6px;
+    pointer-events:none;
+  }
+  .toast{
+    background:var(--ink);
+    border-left:3px solid var(--teal);
+    border-radius:6px;
+    padding:6px 10px;
+    font-size:11.5px;
+    color:var(--bg-page);
+    opacity:0;
+    transform:translateY(-4px);
+    transition:opacity 300ms ease, transform 300ms ease;
+    white-space:nowrap;
+  }
+  .toast.show{opacity:1; transform:translateY(0);}
+
+  .help-card{
+    margin:auto;
+    width:min(94%, 380px);
+    background:var(--bg-surface);
+    color:var(--ink);
+    border-radius:14px;
+    overflow:hidden;
+    pointer-events:auto;
+    box-shadow:0 20px 50px -12px rgba(38,36,31,0.4);
+  }
+  .help-head{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:13px 16px;
+    background:#242220;
+    color:#f4f1ea;
+  }
+  .help-head .mark{
+    font-family:var(--font-pixel);
+    font-size:14px;
+    color:var(--amber);
+  }
+  .help-head h2{
+    font-size:14px;
+    font-weight:600;
+    margin:0;
+    flex:1;
+  }
+  .help-close{
+    background:none;
+    border:none;
+    color:#c9c4b8;
+    font-size:18px;
+    line-height:1;
+    cursor:pointer;
+    padding:2px 4px;
+  }
+  .help-close:hover{color:#fff;}
+  .help-body{padding:18px 20px 20px;}
+  .help-intro{
+    font-size:13.5px;
+    color:var(--muted);
+    line-height:1.5;
+    margin:0 0 16px;
+  }
+  .help-list{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .help-list .row{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    font-size:13.5px;
+  }
+  .help-list .row .icon{
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    font-family:var(--font-mono);
+    font-size:11px;
+    font-weight:600;
+  }
+  .help-list .row:nth-child(1) .icon{background:var(--amber-dim); color:var(--amber-strong);}
+  .help-list .row:nth-child(2) .icon{background:#dcf3f0; color:var(--teal);}
+  .help-list .row:nth-child(3) .icon{background:var(--grey-tint,var(--bg-surface-muted)); color:var(--muted);}
+  .help-list kbd{
+    font-family:var(--font-mono);
+    background:var(--bg-surface-muted);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:1px 6px;
+    font-size:11px;
+    color:var(--muted);
+  }
+
+  /* --- Ticket / dialogue window: deliberately a different visual language
+     from the pixel game world, like a support-chat app dropped on top of it.
+     Fixed to the whole viewport (not just the game canvas) so it has real room. --- */
+  .ticket{
+    position:fixed;
+    inset:0;
+    z-index:50;
+    display:flex;
+    flex-direction:column;
+    background:#0c0d14b3;
+    backdrop-filter:blur(3px);
+    padding:24px 16px;
+  }
+  .ticket[hidden]{display:none;}
+
+  .ticket-card{
+    margin:auto;
+    width:min(96%, 640px);
+    max-height:min(86vh, 720px);
+    display:flex;
+    flex-direction:column;
+    background:#faf8f4;
+    color:#242220;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 20px 50px -12px rgba(0,0,0,0.55);
+    pointer-events:auto;
+  }
+  .ticket-head{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:12px 14px;
+    background:#242220;
+    color:#f4f1ea;
+  }
+  .ticket-avatar{
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    background:var(--amber);
+    color:#242220;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+    flex-shrink:0;
+  }
+  .ticket-head .meta{min-width:0;}
+  .ticket-head .name{font-size:14px; font-weight:600;}
+  .ticket-head .tag{
+    font-family:var(--font-mono);
+    font-size:10.5px;
+    color:#c9c4b8;
+    letter-spacing:0.03em;
+  }
+  .ticket-close{
+    margin-left:auto;
+    background:none;
+    border:none;
+    color:#c9c4b8;
+    font-size:18px;
+    cursor:pointer;
+    line-height:1;
+    padding:4px 6px;
+  }
+  .ticket-close:hover{color:#fff;}
+
+  .help-close{
+    float:right;
+    background:none;
+    border:none;
+    color:var(--muted);
+    font-size:18px;
+    cursor:pointer;
+    line-height:1;
+    padding:4px 6px;
+  }
+  .help-close:hover{color:var(--ink);}
+
+  .ticket-scene{
+    padding:10px 14px 0;
+    font-size:12px;
+    font-style:italic;
+    color:#8a8478;
+  }
+
+  .ticket-body{
+    flex:1;
+    overflow-y:auto;
+    padding:16px 18px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    min-height:260px;
+  }
+  .bubble{
+    max-width:82%;
+    padding:10px 14px;
+    border-radius:12px;
+    font-size:15px;
+    line-height:1.46;
+  }
+  .bubble.them{
+    background:#ece7dc;
+    align-self:flex-start;
+    border-bottom-left-radius:4px;
+  }
+  .bubble.me{
+    background:var(--teal-dim);
+    color:#eafffa;
+    align-self:flex-end;
+    border-bottom-right-radius:4px;
+  }
+  .bubble.typing{
+    color:#8a8478;
+    font-style:italic;
+  }
+  .bubble .err{
+    display:block;
+    margin-top:6px;
+    font-size:12px;
+    color:#b5453f;
+  }
+  .bubble .retry{
+    background:none;
+    border:none;
+    color:#8a4400;
+    text-decoration:underline;
+    cursor:pointer;
+    font-size:12px;
+    padding:0;
+  }
+
+  .ticket-options{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    padding:12px 18px 18px;
+    border-top:1px solid #e5e0d4;
+    background:#fdfcfa;
+  }
+  .option-btn{
+    text-align:left;
+    background:#fff;
+    border:1.5px solid #d9d3c4;
+    border-radius:10px;
+    padding:11px 14px;
+    font-family:var(--font-body);
+    font-size:14.5px;
+    line-height:1.4;
+    color:#242220;
+    cursor:pointer;
+  }
+  .option-btn:hover{border-color:var(--teal-dim); background:#f2fbf9;}
+  .option-btn:focus-visible{outline:2px solid var(--teal); outline-offset:1px;}
+  .option-btn .tagline-hint{
+    display:block;
+    font-family:var(--font-mono);
+    font-size:10.5px;
+    color:#8a8478;
+    margin-top:3px;
+  }
+  .option-btn.end-btn{
+    text-align:center;
+    background:var(--amber);
+    border-color:var(--amber);
+    color:#241a04;
+    font-weight:600;
+  }
+  .option-btn.end-btn:hover{background:#ffc372;}
+
+  .btn{
+    font-family:var(--font-body);
+    font-weight:600;
+    font-size:13px;
+    border:none;
+    border-radius:8px;
+    padding:9px 14px;
+    cursor:pointer;
+  }
+  .btn:focus-visible{outline:2px solid var(--amber); outline-offset:2px;}
+  .btn[disabled]{opacity:0.45; cursor:not-allowed;}
+  .btn-finish{background:var(--amber); color:#241a04;}
+  .btn-finish:hover:not([disabled]){background:#ffc372;}
+
+  /* --- Report panel --- */
+  .report-card{
+    margin:auto;
+    width:min(96%, 560px);
+    max-height:min(86vh, 680px);
+    overflow-y:auto;
+    background:#faf8f4;
+    color:#242220;
+    border-radius:12px;
+    padding:24px 26px 22px;
+    pointer-events:auto;
+    box-shadow:0 20px 50px -12px rgba(0,0,0,0.55);
+  }
+  .report-eyebrow{
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:0.02em;
+    color:#8a8478;
+  }
+  .report-title{
+    font-size:19px;
+    font-weight:700;
+    margin:4px 0 14px;
+    text-wrap:balance;
+  }
+  .levelup{
+    background:var(--amber);
+    color:#241a04;
+    font-family:var(--font-pixel);
+    font-size:11px;
+    padding:8px 10px;
+    border-radius:8px;
+    margin-bottom:14px;
+    animation:pulse 1.1s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%,100%{transform:scale(1);} 50%{transform:scale(1.03);} }
+
+  .rubric-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:6px 0;
+  }
+  .rubric-row .label{flex:1; font-size:13px;}
+  .pips{display:flex; gap:3px;}
+  .pip{width:14px; height:14px; border-radius:3px; background:#e5e0d4;}
+  .pip.on{background:var(--teal-dim);}
+  .rubric-row .val{
+    font-family:var(--font-mono);
+    font-size:12px;
+    color:#8a8478;
+    width:28px;
+    text-align:right;
+    font-variant-numeric:tabular-nums;
+  }
+
+  .resolved-chip{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-family:var(--font-mono);
+    font-size:11.5px;
+    padding:4px 10px;
+    border-radius:999px;
+    margin:12px 0 4px;
+  }
+  .resolved-chip.yes{background:#e4f5e6; color:#2c6b39;}
+  .resolved-chip.no{background:#fbe6e4; color:#a3352c;}
+  .resolved-chip .dot{width:7px; height:7px; border-radius:50%; background:currentColor;}
+
+  .feedback-note{
+    background:#f3ecd8;
+    border:1px solid #e3d8b3;
+    border-radius:8px;
+    padding:12px 14px;
+    font-size:13.5px;
+    line-height:1.5;
+    margin:14px 0;
+    transform:rotate(-0.4deg);
+  }
+
+  .xp-gain{
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    margin:16px 0 18px;
+  }
+  .xp-gain .num{
+    font-family:var(--font-pixel);
+    font-size:22px;
+    color:#b8790a;
+  }
+  .xp-gain .cap{
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:#8a8478;
+  }
+
+  .report-actions{display:flex; justify-content:flex-end;}
+
+  .loading{
+    margin:auto;
+    text-align:center;
+    color:#faf8f4cc;
+    font-family:var(--font-mono);
+    font-size:13px;
+    pointer-events:none;
+  }
+  .dots::after{
+    content:"";
+    animation:dots 1.2s steps(4,end) infinite;
+  }
+  @keyframes dots{ 0%{content:"";} 25%{content:".";} 50%{content:"..";} 75%{content:"...";} 100%{content:"";} }
+
+  @media (max-width:480px){
+    .hud{flex-direction:column; align-items:stretch;}
+    .hud .xp-block{align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="wordmark">XPedia</div>
+      <div class="tagline">Vista previa jugable de una misión.</div>
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="hud">
+      <div class="hud-context">Representante · Sucursal Centro</div>
+      <div class="stat-pills">
+        <div class="pill level">
+          <span class="icon" aria-hidden="true">Lvl</span>
+          <span class="val" id="hudLevel">1</span>
+        </div>
+        <div class="pill xp">
+          <span class="icon" aria-hidden="true">XP</span>
+          <span class="val" id="hudXp">0%</span>
+        </div>
+        <div class="pill cases">
+          <span class="icon" aria-hidden="true">✓</span>
+          <span class="val" id="hudCases">0</span>
+        </div>
+        <div class="pill skill">
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 12 12" width="14" height="14" shape-rendering="crispEdges">
+              <rect x="5" y="0" width="2" height="7" fill="currentColor"/>
+              <rect x="3" y="7" width="6" height="2" fill="currentColor"/>
+              <rect x="5" y="9" width="2" height="3" fill="currentColor"/>
+            </svg>
+          </span>
+          <span class="val" id="hudSkill">0</span>
+        </div>
+        <button class="pill help-chip" id="helpFab" aria-haspopup="dialog" aria-label="Cómo jugar">
+          <span class="icon" aria-hidden="true">?</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="viewport">
+      <canvas id="game" width="288" height="192"></canvas>
+
+      <div class="toasts" id="toasts"></div>
+
+      <div class="overlay-layer">
+        <div class="prompt" id="prompt" hidden>Presioná <kbd>Espacio</kbd> para atender a Gustavo</div>
+
+        <div class="ticket" id="ticket" hidden>
+          <div class="ticket-card">
+            <div class="ticket-head">
+              <div class="ticket-avatar">G</div>
+              <div class="meta">
+                <div class="name">Gustavo Beltrán</div>
+                <div class="tag">Ticket #4471 · Telecom Sur</div>
+              </div>
+              <button class="ticket-close" id="ticketClose" aria-label="Cerrar">×</button>
+            </div>
+            <div class="ticket-scene" id="ticketScene">Gustavo se acerca al mostrador con los brazos cruzados y el resumen de cuenta en la mano.</div>
+            <div class="ticket-body" id="ticketBody"></div>
+            <div class="ticket-options" id="ticketOptions"></div>
+          </div>
+        </div>
+
+        <div class="ticket" id="report" hidden>
+          <div class="report-card" id="reportCard"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ticket" id="helpModal" hidden>
+    <div class="help-card">
+      <div class="help-head">
+        <span class="mark">?</span>
+        <h2>Cómo jugar</h2>
+        <button class="help-close" id="helpClose" aria-label="Cerrar">×</button>
+      </div>
+      <div class="help-body">
+        <p class="help-intro">Explorá la sucursal y acercate a Gustavo, un cliente con un reclamo. Cada respuesta que elijas suma o resta puntos en tu evaluación final.</p>
+        <div class="help-list">
+          <div class="row"><span class="icon" aria-hidden="true">↑↓</span><span>Moverse — <kbd>flechas</kbd> o <kbd>WASD</kbd></span></div>
+          <div class="row"><span class="icon" aria-hidden="true">"</span><span>Hablar con quien tenés al lado — <kbd>Espacio</kbd></span></div>
+          <div class="row"><span class="icon" aria-hidden="true">×</span><span>Cerrar una ventana — <kbd>Esc</kbd></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- map ----------
+  // 0 floor  1 wall  2 desk/counter  3 plant  4 npc
+  const MAP = [
+    [1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,0,0,3,0,0,0,0,3,0,0,1],
+    [1,0,2,2,2,2,2,2,2,2,0,1],
+    [1,0,0,0,0,4,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,3,0,0,0,0,0,0,3,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1],
+  ];
+  const COLS = MAP[0].length, ROWS = MAP.length, TILE = 24;
+  let npcTile = {x:5,y:3};
+  for (let y=0;y<ROWS;y++) for (let x=0;x<COLS;x++) if (MAP[y][x]===4) npcTile={x,y};
+
+  function walkable(x,y){
+    if (x<0||y<0||x>=COLS||y>=ROWS) return false;
+    const v = MAP[y][x];
+    return v===0;
+  }
+
+  // ---------- state ----------
+  const state = {
+    level:1, xp:0, xpToNext:100, cases:0, skillPoints:0,
+    player:{ x:5, y:6, px:5*TILE, py:6*TILE, moving:false, from:null, to:null, t:0 },
+    dialogueOpen:false, reportOpen:false, helpOpen:false,
+    node:null, score:null,
+  };
+
+  // ---------- dialogue tree (scripted for now — no live AI call) ----------
+  const TREE = {
+    start: {
+      text: 'Me cobraron dos veces el mismo servicio este mes. Ya llamé una vez y no solucionaron nada. Quiero que esto se arregle YA.',
+      options: [
+        { text:'Entiendo tu frustración. Vamos a revisar tu cuenta ahora mismo para solucionarlo.', tags:{empatia:2,resolucion:1}, next:'calm1' },
+        { text:'Señor, tranquilícese, seguramente fue un error del sistema.', tags:{empatia:-1,tono_profesional:-1}, next:'angry1' },
+        { text:'Para eso tiene que llamar al 0800, yo no puedo hacer nada acá.', tags:{resolucion:-2,empatia:-2}, next:'angry2' },
+      ],
+    },
+    calm1: {
+      text: 'Bueno… al menos alguien me escucha. ¿Y qué van a hacer al respecto?',
+      options: [
+        { text:'Genero la devolución del cobro duplicado ahora mismo. Te llega en 48hs, con comprobante por mail.', tags:{resolucion:2,claridad:2}, next:'end_resolved' },
+        { text:'Voy a derivar tu caso a otro sector, ellos te van a contactar en unos días.', tags:{claridad:-1}, next:'end_partial' },
+        { text:'No te puedo asegurar nada, pero voy a intentar.', tags:{resolucion:-1,tono_profesional:-1}, next:'partial_neg' },
+      ],
+    },
+    angry1: {
+      text: '¿Error del sistema? A MÍ me cobraron de más, no es un problema abstracto, es MI plata.',
+      options: [
+        { text:'Tenés razón, disculpame. Vamos a revisarlo juntos ahora mismo.', tags:{empatia:1}, next:'calm1' },
+        { text:'Bueno, cálmese que tampoco es para tanto.', tags:{tono_profesional:-2,empatia:-2}, next:'end_unresolved' },
+      ],
+    },
+    angry2: {
+      text: '¿Encima me mandás a llamar de nuevo? Ya perdí 40 minutos en eso. Quiero hablar con alguien que resuelva ACÁ.',
+      options: [
+        { text:'Tiene razón, disculpe. Déjeme ver qué puedo hacer yo mismo.', tags:{empatia:1,resolucion:1}, next:'calm1' },
+        { text:'Son las políticas de la empresa, no las puedo cambiar.', tags:{resolucion:-2}, next:'end_unresolved' },
+      ],
+    },
+    partial_neg: {
+      text: '"Intentar" no me sirve. Necesito una fecha concreta.',
+      options: [
+        { text:'Tenés razón. Te confirmo la devolución para el viernes, con número de comprobante.', tags:{resolucion:2}, next:'end_resolved' },
+        { text:'No te puedo dar una fecha exacta, disculpá.', tags:{resolucion:-1}, next:'end_partial' },
+      ],
+    },
+    end_resolved: {
+      text: 'Bueno… se agradece que alguien lo solucione de una vez. Gracias.',
+      end: 'resolved',
+    },
+    end_partial: {
+      text: 'Mmm, no es lo que esperaba, pero bueno… esperemos que esta vez sí funcione.',
+      end: 'partial',
+    },
+    end_unresolved: {
+      text: 'Esto es un chiste. Quiero hablar con un supervisor y voy a hacer el reclamo en Defensa del Consumidor.',
+      end: 'unresolved',
+    },
+  };
+
+  const ENDING_COPY = {
+    resolved: { resolved:true, feedback:'Resolviste el reclamo con una solución concreta y mantuviste la calma del cliente. Así se maneja un caso difícil.' },
+    partial: { resolved:true, feedback:'Calmaste al cliente, pero la solución quedó ambigua — un compromiso concreto (fecha, número de gestión) cierra mejor un reclamo.' },
+    unresolved: { resolved:false, feedback:'El cliente escaló el reclamo. Faltó empatía inicial y una solución concreta antes de que la situación se fuera de las manos.' },
+  };
+
+  function snapshot(){
+    try{
+      window.claude?.hot?.snapshot?.({ level:state.level, xp:state.xp, xpToNext:state.xpToNext, cases:state.cases, skillPoints:state.skillPoints });
+    }catch(e){}
+  }
+
+  // ---------- HUD ----------
+  const hudLevel = document.getElementById('hudLevel');
+  const hudXp = document.getElementById('hudXp');
+  const hudCases = document.getElementById('hudCases');
+  const hudSkill = document.getElementById('hudSkill');
+
+  function updateHud(){
+    hudLevel.textContent = state.level;
+    hudXp.textContent = Math.round(Math.min(100, (state.xp/state.xpToNext)*100)) + '%';
+    hudCases.textContent = state.cases;
+    hudSkill.textContent = state.skillPoints;
+  }
+
+  function grantXp(amount){
+    let leveledUp = false;
+    state.xp += amount;
+    while (state.xp >= state.xpToNext){
+      state.xp -= state.xpToNext;
+      state.level += 1;
+      state.xpToNext = state.level * 100;
+      leveledUp = true;
+    }
+    updateHud();
+    snapshot();
+    return leveledUp;
+  }
+
+  // ---------- canvas drawing ----------
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+
+  const COLORS = {
+    floorA:'#eef1f5', floorB:'#e5e9ef', floorRug:'#e7cfa1',
+    wallTop:'#e6e9ef', wallBody:'#aeb4c0',
+    deskTop:'#e3c9a1', deskBody:'#c9a984', deskScreen:'#7fd9c9', deskKey:'#8a7255',
+    potBody:'#8a6a4a', potRim:'#a3805c', leaf1:'#3f8f5c', leaf2:'#5cb377', leaf3:'#7ecb8f',
+  };
+
+  function shade(hex, amt){
+    const n = parseInt(hex.slice(1),16);
+    let r=(n>>16)&255, g=(n>>8)&255, b=n&255;
+    r = Math.max(0,Math.min(255, Math.round(r + (amt<0 ? r*amt : (255-r)*amt))));
+    g = Math.max(0,Math.min(255, Math.round(g + (amt<0 ? g*amt : (255-g)*amt))));
+    b = Math.max(0,Math.min(255, Math.round(b + (amt<0 ? b*amt : (255-b)*amt))));
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
+  }
+
+  function drawTile(x,y,v){
+    const px = x*TILE, py = y*TILE;
+    const checker = (x+y)%2===0 ? COLORS.floorA : COLORS.floorB;
+    ctx.fillStyle = checker;
+    ctx.fillRect(px,py,TILE,TILE);
+    ctx.strokeStyle = 'rgba(20,25,40,0.035)';
+    ctx.strokeRect(px+0.5,py+0.5,TILE-1,TILE-1);
+
+    if (v===1){
+      ctx.fillStyle = COLORS.wallBody;
+      ctx.fillRect(px,py,TILE,TILE);
+      ctx.fillStyle = COLORS.wallTop;
+      ctx.fillRect(px,py,TILE,6);
+      ctx.fillStyle = 'rgba(20,25,40,0.12)';
+      ctx.fillRect(px+TILE-1,py,1,TILE);
+      ctx.fillRect(px,py+TILE-3,TILE,3);
+    } else if (v===2){
+      ctx.fillStyle = 'rgba(20,25,40,0.10)';
+      ctx.fillRect(px+2,py+TILE-3,TILE-4,3);
+      ctx.fillStyle = COLORS.deskBody;
+      ctx.fillRect(px+1,py+8,TILE-2,TILE-11);
+      ctx.fillStyle = shade(COLORS.deskBody,-0.15);
+      ctx.fillRect(px+1,py+TILE-6,TILE-2,3);
+      ctx.fillStyle = COLORS.deskTop;
+      ctx.fillRect(px+1,py+6,TILE-2,4);
+      ctx.fillStyle = '#2b2f3a';
+      ctx.fillRect(px+6,py+10,TILE-12,7);
+      ctx.fillStyle = COLORS.deskScreen;
+      ctx.fillRect(px+7,py+11,TILE-14,5);
+      ctx.fillStyle = COLORS.deskKey;
+      ctx.fillRect(px+7,py+18,TILE-14,2);
+    } else if (v===3){
+      ctx.fillStyle = 'rgba(20,25,40,0.08)';
+      ctx.beginPath(); ctx.ellipse(px+TILE/2,py+22,7,2.2,0,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = COLORS.potBody;
+      ctx.fillRect(px+8,py+16,TILE-16,7);
+      ctx.fillStyle = COLORS.potRim;
+      ctx.fillRect(px+7,py+15,TILE-14,2.5);
+      ctx.fillStyle = COLORS.leaf1;
+      ctx.beginPath(); ctx.arc(px+TILE/2-4,py+11,5.5,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(px+TILE/2+4,py+11,5.5,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = COLORS.leaf2;
+      ctx.beginPath(); ctx.arc(px+TILE/2,py+8,6.5,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = COLORS.leaf3;
+      ctx.beginPath(); ctx.arc(px+TILE/2-2.5,py+6,2.6,0,Math.PI*2); ctx.fill();
+    }
+  }
+
+  function drawPerson(px,py,shirt,skin,hair){
+    // ground shadow — grounds the sprite on the tile
+    ctx.fillStyle = 'rgba(20,20,35,0.15)';
+    ctx.beginPath(); ctx.ellipse(px+TILE/2, py+21.5, 7, 2.4, 0, 0, Math.PI*2); ctx.fill();
+
+    // shoes
+    ctx.fillStyle = '#2b2320';
+    ctx.fillRect(px+7, py+20.5, 4, 2);
+    ctx.fillRect(px+13, py+20.5, 4, 2);
+
+    // arms
+    ctx.fillStyle = shade(shirt,-0.12);
+    ctx.fillRect(px+4, py+14, 2.5, 6);
+    ctx.fillRect(px+17.5, py+14, 2.5, 6);
+
+    // torso — two-tone for a little volume
+    ctx.fillStyle = shirt;
+    ctx.fillRect(px+6, py+13, 12, 8);
+    ctx.fillStyle = shade(shirt,-0.16);
+    ctx.fillRect(px+15, py+13, 3, 8);
+    ctx.fillStyle = shade(shirt,0.22);
+    ctx.fillRect(px+7, py+13, 2, 3);
+
+    // head
+    ctx.fillStyle = skin;
+    ctx.beginPath(); ctx.arc(px+TILE/2, py+9.5, 5, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = shade(skin,-0.1);
+    ctx.beginPath(); ctx.arc(px+TILE/2+2.4, py+11, 1.6, 0, Math.PI*2); ctx.fill();
+
+    // hair
+    ctx.fillStyle = hair;
+    ctx.beginPath(); ctx.arc(px+TILE/2, py+7, 5.3, Math.PI, 0); ctx.fill();
+    ctx.fillRect(px+7, py+6.5, 10, 2.5);
+
+    // eyes
+    ctx.fillStyle = '#241f1c';
+    ctx.fillRect(px+9, py+9, 1.6, 1.8);
+    ctx.fillRect(px+13, py+9, 1.6, 1.8);
+  }
+
+  function drawBubble(px,py,t){
+    const bob = Math.sin(t/220)*2;
+    const bx = px+9, by = py-11+bob;
+    ctx.fillStyle = '#ffb454';
+    ctx.beginPath();
+    ctx.moveTo(bx,by); ctx.lineTo(bx+12,by); ctx.lineTo(bx+6,by+7);
+    ctx.closePath(); ctx.fill();
+    ctx.fillRect(bx,by-10,12,10);
+    ctx.fillStyle = '#241a04';
+    ctx.font = 'bold 9px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('!', bx+6, by-2);
+  }
+
+  // ---------- ambient life: customers walking in, queueing, leaving ----------
+  const AMBIENT_NAMES = ['Marta','Julián','Rosa','Ezequiel','Noelia','Ramiro'];
+  const AMBIENT_SHIRTS = ['#7566c9','#c96f95','#4a90c2','#9c8355'];
+  const AMBIENT_ENTRANCE = {x:10, y:6};
+  const AMBIENT_SLOTS = [{x:10,y:3},{x:10,y:4}];
+  const ambientNpcs = [];
+  const slotTaken = [false,false];
+  const AMBIENT_SPEED = 3.6; // tiles per second
+
+  function spawnAmbient(){
+    const freeSlot = slotTaken.indexOf(false);
+    if (freeSlot === -1 || ambientNpcs.length >= AMBIENT_SLOTS.length) return;
+    slotTaken[freeSlot] = true;
+    const name = AMBIENT_NAMES[Math.floor(Math.random()*AMBIENT_NAMES.length)];
+    const shirt = AMBIENT_SHIRTS[Math.floor(Math.random()*AMBIENT_SHIRTS.length)];
+    ambientNpcs.push({
+      name, shirt,
+      x: AMBIENT_ENTRANCE.x, y: AMBIENT_ENTRANCE.y,
+      slot: freeSlot,
+      path: [ {x:AMBIENT_SLOTS[freeSlot].x, y:AMBIENT_SLOTS[freeSlot].y} ],
+      state:'walking', waitUntil:0,
+    });
+    toast('Llegó ' + name + ' a la sucursal.');
+  }
+
+  function updateAmbient(ts, dt){
+    for (let i=ambientNpcs.length-1; i>=0; i--){
+      const n = ambientNpcs[i];
+      if (n.state === 'walking' && n.path.length){
+        const target = n.path[0];
+        const dx = target.x - n.x, dy = target.y - n.y;
+        const dist = Math.hypot(dx,dy);
+        const step = AMBIENT_SPEED * (dt/1000);
+        if (dist <= step || dist === 0){
+          n.x = target.x; n.y = target.y;
+          n.path.shift();
+          if (!n.path.length){
+            if (n.state === 'walking' && n.y === AMBIENT_SLOTS[n.slot].y && n.x === AMBIENT_SLOTS[n.slot].x){
+              n.state = 'waiting';
+              n.waitUntil = ts + 3000 + Math.random()*3000;
+            } else {
+              // reached entrance while leaving
+              slotTaken[n.slot] = false;
+              ambientNpcs.splice(i,1);
+            }
+          }
+        } else {
+          n.x += (dx/dist)*step;
+          n.y += (dy/dist)*step;
+        }
+      } else if (n.state === 'waiting' && ts >= n.waitUntil){
+        n.state = 'walking';
+        n.path = [ {x:AMBIENT_ENTRANCE.x, y:AMBIENT_ENTRANCE.y} ];
+      }
+    }
+  }
+
+  function drawAmbient(){
+    for (const n of ambientNpcs){
+      drawPerson(n.x*TILE, n.y*TILE, n.shirt, '#e8b98c', '#2b2320');
+    }
+  }
+
+  setTimeout(function scheduleSpawn(){
+    spawnAmbient();
+    setTimeout(scheduleSpawn, 5000 + Math.random()*4000);
+  }, 1500);
+
+  // ---------- toast notifications ----------
+  const toastsEl = document.getElementById('toasts');
+  function toast(msg){
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.textContent = msg;
+    toastsEl.appendChild(el);
+    requestAnimationFrame(() => el.classList.add('show'));
+    setTimeout(() => {
+      el.classList.remove('show');
+      setTimeout(() => el.remove(), 350);
+    }, 3200);
+  }
+
+  let lastTs = 0;
+  function loop(ts){
+    const dt = ts - lastTs; lastTs = ts;
+    updateMovement(ts);
+    updateAmbient(ts, dt || 16);
+
+    for (let y=0;y<ROWS;y++) for (let x=0;x<COLS;x++) drawTile(x,y,MAP[y][x]);
+
+    drawAmbient();
+
+    drawPerson(npcTile.x*TILE, npcTile.y*TILE, '#d9772f', '#e8b98c', '#3a2418');
+    if (!state.dialogueOpen && !state.reportOpen && isAdjacentToNpc()){
+      drawBubble(npcTile.x*TILE, npcTile.y*TILE, ts);
+    }
+
+    drawPerson(state.player.px, state.player.py, '#1fae9c', '#e8b98c', '#241a1a');
+
+    requestAnimationFrame(loop);
+  }
+
+  // ---------- movement ----------
+  const MOVE_MS = 130;
+  function updateMovement(ts){
+    const p = state.player;
+    if (!p.moving) return;
+    if (p.t === null) p.t = ts;
+    const elapsed = ts - p.t;
+    const f = Math.min(1, elapsed / MOVE_MS);
+    p.px = p.from.px + (p.to.px - p.from.px) * f;
+    p.py = p.from.py + (p.to.py - p.from.py) * f;
+    if (f >= 1){
+      p.moving = false;
+      p.px = p.to.px; p.py = p.to.py;
+      p.x = p.to.x; p.y = p.to.y;
+      refreshPrompt();
+    }
+  }
+
+  function tryMove(dx,dy){
+    const p = state.player;
+    if (p.moving || state.dialogueOpen || state.reportOpen || state.helpOpen) return;
+    const nx = p.x+dx, ny = p.y+dy;
+    if (!walkable(nx,ny)) return;
+    p.from = { px:p.px, py:p.py, x:p.x, y:p.y };
+    p.to = { px:nx*TILE, py:ny*TILE, x:nx, y:ny };
+    p.moving = true;
+    p.t = null;
+  }
+
+  function isAdjacentToNpc(){
+    const p = state.player;
+    const d = Math.abs(p.x-npcTile.x) + Math.abs(p.y-npcTile.y);
+    return d === 1;
+  }
+
+  const promptEl = document.getElementById('prompt');
+  function refreshPrompt(){
+    promptEl.hidden = state.dialogueOpen || state.reportOpen || state.helpOpen || !isAdjacentToNpc();
+  }
+  setInterval(refreshPrompt, 150);
+
+  // ---------- help panel ----------
+  const helpModal = document.getElementById('helpModal');
+  function openHelp(){ state.helpOpen = true; helpModal.hidden = false; refreshPrompt(); }
+  function closeHelp(){ state.helpOpen = false; helpModal.hidden = true; refreshPrompt(); }
+  document.getElementById('helpFab').addEventListener('click', openHelp);
+  document.getElementById('helpClose').addEventListener('click', closeHelp);
+
+  // ---------- input ----------
+  window.addEventListener('keydown', (e) => {
+    const active = document.activeElement;
+    const typing = active && (active.tagName === 'TEXTAREA' || active.tagName === 'INPUT');
+
+    if (state.helpOpen){
+      if (e.key === 'Escape') closeHelp();
+      return;
+    }
+
+    if (state.reportOpen){
+      if (e.key === 'Escape') closeReport();
+      return;
+    }
+
+    if (state.dialogueOpen){
+      if (e.key === 'Escape') closeDialogue();
+      return;
+    }
+
+    if (typing) return;
+
+    switch(e.key){
+      case 'ArrowUp': case 'w': case 'W': tryMove(0,-1); break;
+      case 'ArrowDown': case 's': case 'S': tryMove(0,1); break;
+      case 'ArrowLeft': case 'a': case 'A': tryMove(-1,0); break;
+      case 'ArrowRight': case 'd': case 'D': tryMove(1,0); break;
+      case ' ':
+        e.preventDefault();
+        if (isAdjacentToNpc()) openDialogue();
+        break;
+    }
+  });
+
+  // ---------- dialogue (scripted tree: pick an option, Gustavo reacts) ----------
+  const ticketEl = document.getElementById('ticket');
+  const ticketBody = document.getElementById('ticketBody');
+  const ticketOptions = document.getElementById('ticketOptions');
+  const ticketClose = document.getElementById('ticketClose');
+  const reportEl = document.getElementById('report');
+  const reportCard = document.getElementById('reportCard');
+
+  function openDialogue(){
+    state.dialogueOpen = true;
+    state.score = { empatia:2, claridad:2, resolucion:2, tono_profesional:2 };
+    ticketBody.innerHTML = '';
+    ticketEl.hidden = false;
+    renderNode('start');
+  }
+
+  function closeDialogue(){
+    state.dialogueOpen = false;
+    ticketEl.hidden = true;
+  }
+  ticketClose.addEventListener('click', closeDialogue);
+
+  function addBubble(role, text){
+    const b = document.createElement('div');
+    b.className = 'bubble ' + (role==='user' ? 'me' : 'them');
+    b.textContent = text;
+    ticketBody.appendChild(b);
+    ticketBody.scrollTop = ticketBody.scrollHeight;
+    return b;
+  }
+
+  function escapeHtml(s){
+    return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function renderNode(key){
+    state.node = key;
+    const node = TREE[key];
+    addBubble('them', node.text);
+    ticketOptions.innerHTML = '';
+
+    if (node.end){
+      const btn = document.createElement('button');
+      btn.className = 'option-btn end-btn';
+      btn.type = 'button';
+      btn.textContent = 'Ver resultado →';
+      btn.addEventListener('click', () => finishFromTree(node.end));
+      ticketOptions.appendChild(btn);
+      return;
+    }
+
+    node.options.forEach((opt) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.type = 'button';
+      btn.textContent = opt.text;
+      btn.addEventListener('click', () => chooseOption(opt));
+      ticketOptions.appendChild(btn);
+    });
+  }
+
+  function chooseOption(opt){
+    addBubble('user', opt.text);
+    ticketOptions.innerHTML = '';
+    if (opt.tags){
+      for (const k in opt.tags) state.score[k] = (state.score[k] || 0) + opt.tags[k];
+    }
+    setTimeout(() => renderNode(opt.next), 260);
+  }
+
+  function finishFromTree(endType){
+    const ending = ENDING_COPY[endType];
+    const score = {
+      empatia: clampInt(state.score.empatia, 0, 5),
+      claridad: clampInt(state.score.claridad, 0, 5),
+      resolucion: clampInt(state.score.resolucion, 0, 5),
+      tono_profesional: clampInt(state.score.tono_profesional, 0, 5),
+    };
+    const total = score.empatia + score.claridad + score.resolucion + score.tono_profesional;
+    const xp = clampInt(20 + total*4, 20, 100);
+
+    state.cases += 1;
+    state.skillPoints += total;
+    const leveledUp = grantXp(xp);
+    renderReport({ ...score, caso_resuelto: ending.resolved, xp, feedback: ending.feedback }, leveledUp);
+    closeDialogue();
+    state.reportOpen = true;
+    reportEl.hidden = false;
+  }
+
+  function clampInt(n, min, max){
+    n = Math.round(Number(n));
+    if (isNaN(n)) return min;
+    return Math.max(min, Math.min(max, n));
+  }
+
+  function pips(n){
+    let out = '';
+    for (let i=0;i<5;i++) out += '<span class="pip' + (i<n?' on':'') + '"></span>';
+    return '<div class="pips">' + out + '</div>';
+  }
+
+  function renderReport(r, leveledUp){
+    const empatia = clampInt(r.empatia,0,5), claridad = clampInt(r.claridad,0,5),
+          resolucion = clampInt(r.resolucion,0,5), tono = clampInt(r.tono_profesional,0,5);
+    const resolved = !!r.caso_resuelto;
+    const xp = clampInt(r.xp,10,120);
+    const feedback = (typeof r.feedback === 'string' && r.feedback.trim()) ? r.feedback.trim() : 'Buen intento — seguí practicando este tipo de casos.';
+
+    reportCard.innerHTML = `
+      ${leveledUp ? '<div class="levelup">Subiste a nivel ' + state.level + '</div>' : ''}
+      <div class="report-eyebrow">Informe de desempeño · Ticket #4471</div>
+      <div class="report-title">Atención a Gustavo Beltrán</div>
+
+      <div class="rubric-row"><span class="label">Empatía</span>${pips(empatia)}<span class="val">${empatia}/5</span></div>
+      <div class="rubric-row"><span class="label">Claridad</span>${pips(claridad)}<span class="val">${claridad}/5</span></div>
+      <div class="rubric-row"><span class="label">Resolución</span>${pips(resolucion)}<span class="val">${resolucion}/5</span></div>
+      <div class="rubric-row"><span class="label">Tono profesional</span>${pips(tono)}<span class="val">${tono}/5</span></div>
+
+      <span class="resolved-chip ${resolved?'yes':'no'}"><span class="dot"></span>${resolved ? 'Caso resuelto' : 'Caso sin resolver'}</span>
+
+      <div class="feedback-note">${escapeHtml(feedback)}</div>
+
+      <div class="xp-gain"><span class="num">+${xp}</span><span class="cap">XP ganada</span></div>
+
+      <div class="report-actions"><button class="btn btn-finish" id="reportClose">Volver al mostrador</button></div>
+    `;
+    reportCard.querySelector('#reportClose').addEventListener('click', closeReport);
+  }
+
+  function closeReport(){
+    state.reportOpen = false;
+    reportEl.hidden = true;
+    refreshPrompt();
+  }
+
+  // ---------- boot (persists level/xp across a republish, if the host supports it) ----------
+  function boot(saved){
+    if (saved && typeof saved === 'object'){
+      if (typeof saved.level === 'number') state.level = saved.level;
+      if (typeof saved.xp === 'number') state.xp = saved.xp;
+      if (typeof saved.xpToNext === 'number') state.xpToNext = saved.xpToNext;
+      if (typeof saved.cases === 'number') state.cases = saved.cases;
+      if (typeof saved.skillPoints === 'number') state.skillPoints = saved.skillPoints;
+    }
+    updateHud();
+    requestAnimationFrame(loop);
+  }
+  if (window.claude?.hot?.ready) window.claude.hot.ready(boot);
+  else boot(window.claude?.hot?.data ?? null);
+
+})();
+</script>
+</body>
+</html>
