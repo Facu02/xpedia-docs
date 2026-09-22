@@ -256,6 +256,10 @@ Ordenado por lo que más reduce incertidumbre primero.
 | **E6** | Árbol de habilidades + mundo con varias misiones | Pendiente |
 | **E7** | Piloto real con datos de enganche para la tesis | Pendiente |
 
+> Planificación ejecutable de estas entregas (4 MVPs / 4 sprints, del 24/09 al 04/12/2026),
+> con capacidad del equipo y backlog estimado: ver [`plan-de-sprints.md`](plan-de-sprints.md)
+> y `XPedia-Capacidad-Backlog-Sprints.xlsx`.
+
 ---
 
 ## 9. Bitácora de cambios de rumbo
